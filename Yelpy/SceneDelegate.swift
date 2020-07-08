@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-    
+    let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
     
     // ––––– Lab 5 TODO: Create event listeners for user login + logout
     
@@ -23,18 +23,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         
     
-        // Add event listener for when user logs out
-        NotificationCenter.default.addObserver(forName: Notification.Name("login"), object: nil, queue: OperationQueue.main) { (Notification) in
-            print("Logout notification received")
-            // Load and show Login view controller
+        // Add event listener for when user logs in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("login"), object: nil, queue: OperationQueue.main) { (Notification) in
+            print("Notification received for login")
             self.login()
         }
+
         
         // Add event listener for when user logs out
         NotificationCenter.default.addObserver(forName: Notification.Name("didLogout"), object: nil, queue: OperationQueue.main) { (Notification) in
             print("Logout notification received")
-            // Load and show Login view controller
-            self.logOut()
+            
+            self.logout()
         }
         
         // Add User persistance across app restarts
@@ -48,24 +48,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // ––––– Lab 5 TODO: LOGIN USER
     func login() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        // view controller currently being set in Storyboard as default will be overridden
-        window?.rootViewController = storyboard.instantiateViewController(withIdentifier: "TabBar")
+        
+        window?.rootViewController = self.mainStoryboard.instantiateViewController(withIdentifier: "TabBar")
     }
-    
+
     // ––––– Lab 5 TODO: LOGOUT USER
-    func logOut() {
+    func logout() {
         PFUser.logOutInBackground(block: { (error) in
             if let error = error {
                 print(error.localizedDescription)
             } else {
-                print("Successful Logout")
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let loginViewController = storyboard.instantiateViewController(withIdentifier: "Login")
-                self.window?.rootViewController = loginViewController
-                
+                print("Logout success")
+                let loginVC = self.mainStoryboard.instantiateViewController(identifier: "Login")
+                self.window?.rootViewController = loginVC
             }
-            
         })
     }
     

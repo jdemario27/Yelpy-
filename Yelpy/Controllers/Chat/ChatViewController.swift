@@ -22,9 +22,10 @@ class ChatViewController: UIViewController {
     
     // ––––– LAB 5 TODO: CREATE ARRAY FOR MESSAGES
     var messages: [PFObject] = []
+   
     
     // ––––– LAB 5 TODO: CREATE CHAT MESSAGE OBJECT
-    let chatMessage = PFObject(className: "Message")
+   let chatMessage = PFObject(className: "Message")
 
     
     override func viewDidLoad() {
@@ -37,8 +38,9 @@ class ChatViewController: UIViewController {
         tableView.estimatedRowHeight = 50
         
         
-        // Reload messages every second (interval of 1 second)
+        // Lab 5 TODO: Reload messages every second (interval of 1 second)
         Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.retrieveChatMessages), userInfo: nil, repeats: true)
+        
         tableView.reloadData()
     }
     
@@ -46,10 +48,9 @@ class ChatViewController: UIViewController {
     
     /*------  Message Functionality ------*/
     
-    // ––––– Lab 5 TODO: ADD FUNCTIONALITY TO retrieveChatMessages()
+    // ––––– ADD FUNCTIONALITY TO retrieveChatMessages()
     @objc func retrieveChatMessages() {
-        // ParseClass.TrainingFall2020 is a string from our Constants.swift file
-        let query = PFQuery(className: "TrainingFall2020") // className = group chat name, obtained from Constants.swift
+        let query = PFQuery(className: "TrainingFall2020")
         query.addDescendingOrder("createdAt")
         query.limit = 20
         query.includeKey("user")
@@ -57,9 +58,8 @@ class ChatViewController: UIViewController {
             if let messages = messages {
                 self.messages = messages
                 self.tableView.reloadData()
-            }
-            else {
-                print(error!.localizedDescription)
+            } else {
+                print("Error Querying messages \(error!.localizedDescription)")
             }
         }
     }
@@ -67,18 +67,17 @@ class ChatViewController: UIViewController {
     
     //  ––––– Lab 5 TODO: SEND MESSAGE TO SERVER AFTER onSend IS CLICKED
     @IBAction func onSend(_ sender: Any) {
-        // ParseClass.TrainingFall2020 is a string from our Constants.swift file
         if messageTextField.text!.isEmpty == false {
-            let chatMessage = PFObject(className: "TrainingFall2020") // className = group chat, Obtained from Constants.swift
+            let chatMessage = PFObject(className: "TrainingFall2020")
             chatMessage["text"] = messageTextField.text ?? ""
             chatMessage["user"] = PFUser.current()
-            self.messageTextField.text = "" // reset message
+            //clear text field after sending
+            self.messageTextField.text = ""
             chatMessage.saveInBackground { (success, error) in
                 if success {
-                    print("The message was saved!")
-                    
+                    print("The message was saved")
                 } else if let error = error {
-                    print("Problem saving message: \(error.localizedDescription)")
+                    print("Error saving message \(error.localizedDescription)")
                 }
             }
         } else {
